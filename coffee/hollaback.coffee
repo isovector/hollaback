@@ -1,14 +1,26 @@
+resolution = 32
+
 now = -> Date.now()
-Array.prototype.last = -> @[@.length - 1]
+Array.prototype.last = -> @[@length - 1]
 
 hollaback = window.angular.module "hollaback", []
 
 hollaback.controller "HollabackCtrl", ($scope) ->
   $scope._init = ->
+    # time signature
+    @beatsPerBar = 4
+    @beatValue = 4
+
+    # tempo
     @bpm = 1
     @taps =
       diffs: []
       stamps: []
+
+    # rhythm
+    @sampleRate = 1000
+    @sampleCount = 0
+    @curBar = null
 
 
     @ResetBpm = ->
@@ -26,6 +38,24 @@ hollaback.controller "HollabackCtrl", ($scope) ->
           @taps.diffs.reduce (x, item) ->
             x + item
           , 0
+        @sampleRate =
+          Math.round 1000 / (@bpm * resolution / @beatValue / 60)
+
+
+    @TapRhythm = ->
+      unless @curBar?
+        @curBar = []
+        (
+          timeout = =>
+            @sampleCount++
+            if @sampleCount == resolution
+              @sampleCount = 0
+              @curBar = []
+            setTimeout timeout, @sampleRate
+            @$apply()
+        )()
+
+      @curBar.push @sampleCount
 
 
 

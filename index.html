@@ -1,7 +1,7 @@
 <html ng-app="hollaback">
 <head>
 <link rel="stylesheet" type="text/css" href="css/index.css" />
-<title>Hello World</title>
+<title>Hollaback Rap Analysis</title>
 <script type="text/javascript" src="lib/jquery.js"></script>
 <script type="text/javascript" src="lib/angular.min.js"></script>
 </head>
@@ -10,9 +10,17 @@
 <script type="text/javascript" src="coffee/hollaback.js"></script>
 
 <div ng-controller="HollabackCtrl">
+  <p>
   BPM: {{bpm}}<br />
+  Sample Rate: {{sampleRate}}<br />
   <input type="button" ng-click="TapBpm()" value="Tap" />
   <input type="button" ng-click="ResetBpm()" value="Reset" />
+  </p>
+
+  <p>
+  <input type="button" ng-click="TapRhythm()" value="Record" />
+  Bar: {{curBar}}
+  </p>
 </div>
 
 
