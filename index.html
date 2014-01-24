@@ -1,0 +1,20 @@
+<html ng-app="hollaback">
+<head>
+<link rel="stylesheet" type="text/css" href="css/index.css" />
+<title>Hello World</title>
+<script type="text/javascript" src="lib/jquery.js"></script>
+<script type="text/javascript" src="lib/angular.min.js"></script>
+</head>
+<body>
+
+<script type="text/javascript" src="coffee/hollaback.js"></script>
+
+<div ng-controller="HollabackCtrl">
+  BPM: {{bpm}}<br />
+  <input type="button" ng-click="TapBpm()" value="Tap" />
+  <input type="button" ng-click="ResetBpm()" value="Reset" />
+</div>
+
+
+</body>
+</html>
