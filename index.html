@@ -20,6 +20,9 @@
   <p>
   <input type="button" ng-click="TapRhythm()" value="Record" />
   Bar: {{curBar}}
+  <ul>
+    <li ng-repeat="notes in finishedNotes">{{notes}}</li>
+  </ul>
   </p>
 </div>
 

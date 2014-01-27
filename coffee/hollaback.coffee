@@ -1,4 +1,4 @@
-resolution = 32
+resolution = 16
 
 now = -> Date.now()
 Array.prototype.last = -> @[@length - 1]
@@ -12,15 +12,18 @@ hollaback.controller "HollabackCtrl", ($scope) ->
     @beatValue = 4
 
     # tempo
-    @bpm = 1
+    @bpm = 96
     @taps =
       diffs: []
       stamps: []
 
     # rhythm
-    @sampleRate = 1000
+    @sampleRate = 78
     @sampleCount = 0
     @curBar = null
+    @bars = []
+
+    # transcription
 
 
     @ResetBpm = ->
@@ -50,12 +53,41 @@ hollaback.controller "HollabackCtrl", ($scope) ->
             @sampleCount++
             if @sampleCount == resolution
               @sampleCount = 0
+              @bars.push @curBar
+              @finishedNotes.push (@AnalyzeBar @curBar).join " "
               @curBar = []
             setTimeout timeout, @sampleRate
             @$apply()
         )()
 
       @curBar.push @sampleCount
+
+    notes = []
+    transValue = 0
+    Emit = (len, rest = false) ->
+      if len == transValue
+        notes.push "-"
+      else if len == 0
+        notes.push "/4"
+        return
+      else
+        notes.push ":" + len
+      transValue = len
+      notes.push "X"
+
+    @finishedNotes = []
+    @AnalyzeBar = (bar) ->
+      cur = bar[0]
+      for beat in [1..bar.length]
+        next = bar[beat]
+        diff = next - cur
+        size = Math.round resolution / diff
+        Emit size
+        cur = next
+      Emit 0
+      mynotes = notes
+      notes = []
+      mynotes
 
 
 
