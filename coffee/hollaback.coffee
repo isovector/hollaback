@@ -1,7 +1,12 @@
 resolution = 16
 
 now = -> Date.now()
-Array.prototype.last = -> @[@length - 1]
+Array::last = -> @[@length - 1]
+Number::msb = ->
+  i = 0
+  while (1 << i) <= @
+    ++i
+  i - 1
 
 hollaback = window.angular.module "hollaback", []
 
@@ -54,7 +59,7 @@ hollaback.controller "HollabackCtrl", ($scope) ->
             if @sampleCount == resolution
               @sampleCount = 0
               @bars.push @curBar
-              @finishedNotes.push (@AnalyzeBar @curBar).join " "
+              @finishedNotes.push @AnalyzeBar @curBar
               @curBar = []
             setTimeout timeout, @sampleRate
             @$apply()
@@ -67,27 +72,34 @@ hollaback.controller "HollabackCtrl", ($scope) ->
     Emit = (len, rest = false) ->
       if len == transValue
         notes.push "-"
-      else if len == 0
-        notes.push "/4"
-        return
       else
+        notes.push "/4"
+        return if len == 0
         notes.push ":" + len
       transValue = len
       notes.push "X"
 
+    Fill = (start, end, rest = false) ->
+      diff = end - start
+      if diff == 0
+        return []
+      sigil = if rest then "r" else ""
+      log2 = Math.pow 2, diff.msb()
+      if diff == log2
+        return [resolution / log2 + sigil]
+      if start % log2 != 0
+        log2 /= 2
+      [resolution / log2 + sigil].concat Fill(start + log2, end, true)
+
     @finishedNotes = []
     @AnalyzeBar = (bar) ->
-      cur = bar[0]
-      for beat in [1..bar.length]
-        next = bar[beat]
-        diff = next - cur
-        size = Math.round resolution / diff
-        Emit size
-        cur = next
-      Emit 0
-      mynotes = notes
-      notes = []
-      mynotes
+      rhythm = []
+      remaining = resolution
+      while bar.length
+        note = bar.pop()
+        rhythm = Fill(note, remaining).concat rhythm
+        remaining = note
+      rhythm.join " "
 
 
 
