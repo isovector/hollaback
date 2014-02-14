@@ -2,7 +2,10 @@
 <head>
 <link rel="stylesheet" type="text/css" href="css/index.css" />
 <title>Hollaback Rap Analysis</title>
-<script type="text/javascript" src="lib/jquery.js"></script>
+<script src="lib/vexflow-min.js"></script>
+<script src="lib/underscore-min.js"></script>
+<script src="lib/jquery.js"></script>
+<script src="lib/tabdiv-min.js"></script>
 <script type="text/javascript" src="lib/angular.min.js"></script>
 </head>
 <body>
@@ -20,9 +23,10 @@
   <p>
   <input type="button" ng-click="TapRhythm()" value="Record" />
   Bar: {{curBar}}
-  <ul>
-    <li ng-repeat="notes in finishedNotes">{{notes}}</li>
-  </ul>
+  <div style="float:left;width:600;">
+    <canvas id="engraving"></canvas>
+    <div id="error"></div>
+  </div>
   </p>
 </div>
 

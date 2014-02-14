@@ -1,4 +1,6 @@
 resolution = 16
+$ = window.$
+Vex = window.Vex
 
 now = -> Date.now()
 Array::last = -> @[@length - 1]
@@ -95,12 +97,53 @@ hollaback.controller "HollabackCtrl", ($scope) ->
     @AnalyzeBar = (bar) ->
       rhythm = []
       remaining = resolution
+      note = 0
       while bar.length
         note = bar.pop()
         rhythm = Fill(note, remaining).concat rhythm
         remaining = note
-      rhythm.join " "
+      if note != 0
+        rhythm = Fill(0, note, true).concat rhythm
+      @RenderVex rhythm
+      $("#error").text rhythm.join " "
 
 
+    renderer = new Vex.Flow.Renderer $('#engraving')[0],
+      Vex.Flow.Renderer.Backends.CANVAS
+
+    artist = new Vex.Flow.Artist 10, 10, 600, {scale: 0.8}
+    vextab = new Vex.Flow.VexTab artist
+    header = ""
+    @RenderVex = (rhythm) =>
+      code = "\ntabstave clef=percussion notation=true tablature=false\nnotes "
+      last = -1
+      for note in rhythm
+        duration = note
+        rest = false
+        if note.substr(-1) == "r"
+          duration = note.substr 0, note.length - 1
+          rest = true
+        if duration != last
+          if last != -1
+            code += "/4"
+          code += " :" + duration + " "
+          last = duration
+        else
+          code += "-"
+        if rest
+          code += "X"
+        else
+          code += "B"
+      code += " /4 "
+      header += code
+
+      try
+        vextab.reset()
+        artist.reset()
+        vextab.parse header
+        artist.render renderer
+        $("#error").text code
+      catch e
+        $("#error").text e
 
   $scope._init()
